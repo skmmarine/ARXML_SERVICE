@@ -61,7 +61,7 @@ public class Getexcel extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
@@ -72,8 +72,8 @@ public class Getexcel extends HttpServlet {
 		////////////////////////////////////////////////
 		try {
 	        
-			XSSFWorkbook wb = new XSSFWorkbook();
 			
+			XSSFWorkbook wb = new XSSFWorkbook();
 			//cell style
 			CellStyle cs = wb.createCellStyle();
 			cs.setFillForegroundColor(IndexedColors.LIME.getIndex());
@@ -128,17 +128,39 @@ public class Getexcel extends HttpServlet {
 			spreadSheet5.setColumnWidth((short)2,(short)(256*40));
 			spreadSheet5.setColumnWidth((short)3,(short)(256*80));
 			spreadSheet5.setColumnWidth((short)4,(short)(256*70));
-
+			
 
 	    	Class<?> cl = Class.forName( driver );
             Database database = (Database) cl.newInstance();
             database.setProperty( "create-database", "true" );
             DatabaseManager.registerDatabase( database );
-            String Ecuname = request.getParameter("Web2DB_ECUNAME");
+            //String Ecuname = request.getParameter("Web2DB_ECUNAME");
+            
+            
+          //==========================//
+            // 텍스트 파일 읽기
+            //==========================//
+                BufferedReader infile = new BufferedReader(new FileReader("/usr/local/apache-tomcat-8.5.12/webapps/AREX/path.txt"));
+
+                String s;
+                String EcuName=new String("");
+                String PartName=new String("");
+                int cnt =0;
+                while ((s = infile.readLine()) != null) 
+                {
+                    if(cnt==0) PartName=new String(s);
+                    else if(cnt==1) EcuName=new String(s);
+                    cnt++;
+                }
+                cnt=0;
+                  infile.close();
+            
+            
             String basequery = 
             		   "declare default element namespace \"http://autosar.org/schema/r4.0\";" 
-          //  	+ "\n let $ALL :=doc(\"/db/test/AUTOSAR_MOD_AISpec_Imob.arxml\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
-            + "\n let $ALL :=doc(\"/db/test/AUTOSAR_MOD_AISpec_"+Ecuname+"\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
+            + "\n let $ALL :=doc(\"/db/AUTOSAR/" + PartName + "/TEST_" + EcuName + ".arxml\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
+            //+ "\n let $ALL :=doc(\"/db/test/AUTOSAR_MOD_AISpec_Imob.arxml\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
+           // + "\n let $ALL :=doc(\"/db/test/AUTOSAR_MOD_AISpec_"+Ecuname+"\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
             				 
 
             //sheet1

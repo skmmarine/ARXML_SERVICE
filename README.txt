@@ -1,0 +1,1 @@
+This web application splits AUTOSAR's ARXML files. It also provides the ability to extract split ARXML files into EXCEL files.
