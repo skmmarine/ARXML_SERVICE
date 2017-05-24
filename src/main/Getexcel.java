@@ -140,25 +140,30 @@ public class Getexcel extends HttpServlet {
           //==========================//
             // 텍스트 파일 읽기
             //==========================//
-                BufferedReader infile = new BufferedReader(new FileReader("/usr/local/apache-tomcat-8.5.12/webapps/AREX/path.txt"));
+            /*file read start*/
+            BufferedReader infile = new BufferedReader(new FileReader("/usr/local/apache-tomcat-8.5.12/webapps/AREX_WEB/path.txt"));
 
-                String s;
-                String EcuName=new String("");
-                String PartName=new String("");
-                int cnt =0;
-                while ((s = infile.readLine()) != null) 
-                {
-                    if(cnt==0) PartName=new String(s);
-                    else if(cnt==1) EcuName=new String(s);
-                    cnt++;
-                }
-                cnt=0;
-                  infile.close();
+            String s;
+            String ArxmlName = new String("");
+            String EcuName=new String("");
+            String PartName=new String("");
+            int cnt =0;
+            while ((s = infile.readLine()) != null) 
+            {
+               if(cnt==0) ArxmlName = new String(s);
+               else if(cnt==1) PartName=new String(s);
+                else if(cnt==2) EcuName=new String(s);
+                cnt++;
+            }
+            cnt=0;
+              infile.close();
+              /*file read end*/
+
             
             
             String basequery = 
             		   "declare default element namespace \"http://autosar.org/schema/r4.0\";" 
-            + "\n let $ALL :=doc(\"/db/AUTOSAR/" + PartName + "/TEST_" + EcuName + ".arxml\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
+            + "\n let $ALL :=doc(\"/db/AUTOSAR/" + PartName + "/"+ArxmlName+"_" + EcuName + ".arxml\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
             //+ "\n let $ALL :=doc(\"/db/test/AUTOSAR_MOD_AISpec_Imob.arxml\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
            // + "\n let $ALL :=doc(\"/db/test/AUTOSAR_MOD_AISpec_"+Ecuname+"\")//AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES";
             				 
@@ -491,7 +496,7 @@ public class Getexcel extends HttpServlet {
 	             rd.forward(request, response);
             */
 	        response.setContentType("application/vnd.ms-excel");
-	        response.setHeader("Content-Disposition", "attachment; filename=output.xlsx");
+	        response.setHeader("Content-Disposition", "attachment; filename="+ArxmlName+"_"+EcuName+".xlsx");
 	        wb.write(response.getOutputStream());
 	        response.getOutputStream().close();
 	        wb.close();

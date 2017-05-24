@@ -1,2 +1,1 @@
-Body
-LockgCen
+AUTOSAR_MOD_AISpecificationExamples

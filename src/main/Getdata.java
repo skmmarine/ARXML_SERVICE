@@ -115,67 +115,86 @@ public class Getdata extends HttpServlet {
 			/* MTH_Part_Select_End */
 			//////////////////////
 
-			/* file method start */
-			FileWriter outfile = new FileWriter("/usr/local/apache-tomcat-8.5.12/webapps/AREX/path.txt");
-			outfile.write(PartName);
-			outfile.append(System.getProperty("line.separator"));
-			outfile.write(EcuName);
-			outfile.flush();
-			outfile.close();
+			  /*file read start*/
+			
+            BufferedReader infile = new BufferedReader(new FileReader("/usr/local/apache-tomcat-8.5.12/webapps/AREX_WEB/path.txt"));
 
-			/* file method end */
+            String s;
+            String ArxmlName=new String("");
+            
+            
 
-			String query = "import module namespace xmldb=\"http://exist-db.org/xquery/xmldb\";"
-					+ "\n declare default element namespace \"http://autosar.org/schema/r4.0\";"
-					+ "\n declare namespace functx = \"http://www.functx.com\";"
-					+ "\n declare function functx:change-element-ns-deep" + "\n ( $nodes as node()* ,"
-					+ "\n    $newns as xs:string ," + "\n    $prefix as xs:string )  as node()* {"
-					+ "\n  for $node in $nodes" + "\n  return if ($node instance of element())"
-					+ "\n        then (element" + "\n               {QName ($newns,"
-					+ "\n                          concat($prefix,"
-					+ "\n                                    if ($prefix = '')"
-					+ "\n                                    then ''"
-					+ "\n                                    else ':',"
-					+ "\n                                    local-name($node)))}" + "\n               {$node/@*,"
-					+ "\n                functx:change-element-ns-deep($node/node(),"
-					+ "\n                                           $newns, $prefix)})"
-					+ "\n         else if ($node instance of document-node())"
-					+ "\n         then functx:change-element-ns-deep($node/node(),"
-					+ "\n                                           $newns, $prefix)" + "\n         else $node"
-					+ "\n } ;" + "\n let $test :=doc(\"/db/test/TEST.arxml\")"
-					+ "\n let $log-in := xmldb:login(\"/db\", \"admin\", \"\")"
-					+ "\n let $create-collection := xmldb:create-collection(\"/db\", \"output\")"
-					+ "\n let $filename := \"/TEST_" + EcuName + ".arxml\""
-					+ "\n let $output-create := xmldb:store(\"/db/AUTOSAR/" + PartName + "\", $filename, $test)"
-					+ "\n let $ALL :=doc(\"/db/test/AUTOSAR_MOD_AISpecificationExamples.arxml\")/AUTOSAR/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/ELEMENTS"
-					+ "\n let $ALL_copy :=doc(\"/db/AUTOSAR/" + PartName + "/TEST_" + EcuName
-					+ ".arxml\")/AUTOSAR/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE"
-					+ "\n let $SW :=$ALL/COMPOSITION-SW-COMPONENT-TYPE"
-					+ "\n let $PORT_SR:= $ALL/SENDER-RECEIVER-INTERFACE"
-					+ "\n let $PORT_CS := $ALL/CLIENT-SERVER-INTERFACE" + "\n let $PORT :=($PORT_SR,$PORT_CS)"
-					+ "\n let $ARD := $ALL/APPLICATION-RECORD-DATA-TYPE"
-					+ "\n let $AAD := $ALL/APPLICATION-ARRAY-DATA-TYPE"
-					+ "\n let $APD := $ALL/APPLICATION-PRIMITIVE-DATA-TYPE" + "\n let $DATATYPE := ($APD,$ARD,$AAD)"
-					+ "\n let $ECU := for $ECU in $SW[SHORT-NAME =\"" + EcuName + "\"] return $ECU"
-					// +"\n let $ECU := for $ECU in $SW[SHORT-NAME = \"Imob\"]
-					// return $ECU"
-					+ "\n let $SUBSW :=for $SUBSW in $SW[SHORT-NAME = data($ECU/COMPONENTS/SW-COMPONENT-PROTOTYPE/SHORT-NAME)] return $SUBSW "
-					+ "\n let $PARTSW :=($ECU,$SUBSW)"
-					+ "\n let $PDATA := data($PARTSW/PORTS/P-PORT-PROTOTYPE/PROVIDED-INTERFACE-TREF)"
-					+ "\n let $RDATA := data($PARTSW/PORTS/R-PORT-PROTOTYPE/REQUIRED-INTERFACE-TREF)"
-					+ "\n let $ECU-PORT := for $ECU-PORT in $PORT[SHORT-NAME = $PDATA or SHORT-NAME = $RDATA] return $ECU-PORT"
-					+ "\n let $PORTDATA := data($ECU-PORT/DATA-ELEMENTS/VARIABLE-DATA-PROTOTYPE/TYPE-TREF)"
-					+ "\n let $PORT-DATATYPE := for $PORT-DATATYPE in $DATATYPE[SHORT-NAME = $PORTDATA] return $PORT-DATATYPE"
-					+ "\n let $ECU_insert := functx:change-element-ns-deep($ECU, \"\", \"\")"
-					+ "\n let $PORT_insert := functx:change-element-ns-deep($ECU-PORT, \"\", \"\")"
-					+ "\n let $DATA_insert := functx:change-element-ns-deep($PORT-DATATYPE, \"\", \"\")"
-					+ "\n let $DATATYPE_update := for $x in $DATA_insert"
-					+ "\n return update insert functx:change-element-ns-deep($DATA_insert, \"\", \"\") into $ALL_copy[SHORT-NAME = \"ApplicationDataTypes_Example\"]/ELEMENTS"
-					+ "\n let $PORT_update := for $x in $PORT_insert"
-					+ "\n return update insert functx:change-element-ns-deep($PORT_insert, \"\", \"\") into $ALL_copy[SHORT-NAME = \"PortInterfaces_Example\"]/ELEMENTS"
-					+ "\n let $ECU_update := for $x in $ECU_insert"
-					+ "\n return update insert functx:change-element-ns-deep($ECU_insert, \"\", \"\") into $ALL_copy[SHORT-NAME = \"SwComponentTypes_Example\"]/ELEMENTS"
-					+ "\n return doc(\"/db/AUTOSAR/" + PartName + "/TEST_" + EcuName + ".arxml\")";
+            int cnt =0;
+            while ((s = infile.readLine()) != null) 
+            {
+                if(cnt==0) ArxmlName=new String(s);
+                cnt++;
+            }
+            cnt=0;
+            infile.close();
+              /*file read end*/
+              
+              /* file write start */
+              FileWriter outfile = new FileWriter("/usr/local/apache-tomcat-8.5.12/webapps/AREX_WEB/path.txt");
+              outfile.write(ArxmlName);
+              outfile.append(System.getProperty("line.separator"));
+              outfile.write(PartName);
+              outfile.append(System.getProperty("line.separator"));
+              outfile.write(EcuName);
+              outfile.flush();
+              outfile.close();
+              /* file write end */
+
+              String query = "import module namespace xmldb=\"http://exist-db.org/xquery/xmldb\";"
+                      + "\n declare default element namespace \"http://autosar.org/schema/r4.0\";"
+                      + "\n declare namespace functx = \"http://www.functx.com\";"
+                      + "\n declare function functx:change-element-ns-deep" + "\n ( $nodes as node()* ,"
+                      + "\n    $newns as xs:string ," + "\n    $prefix as xs:string )  as node()* {"
+                      + "\n  for $node in $nodes" + "\n  return if ($node instance of element())"
+                      + "\n        then (element" + "\n               {QName ($newns,"
+                      + "\n                          concat($prefix,"
+                      + "\n                                    if ($prefix = '')"
+                      + "\n                                    then ''"
+                      + "\n                                    else ':',"
+                      + "\n                                    local-name($node)))}" + "\n               {$node/@*,"
+                      + "\n                functx:change-element-ns-deep($node/node(),"
+                      + "\n                                           $newns, $prefix)})"
+                      + "\n         else if ($node instance of document-node())"
+                      + "\n         then functx:change-element-ns-deep($node/node(),"
+                      + "\n                                           $newns, $prefix)" + "\n         else $node"
+                      + "\n } ;" + "\n let $test :=doc(\"/db/test/TEST.arxml\")"
+                      + "\n let $log-in := xmldb:login(\"/db\", \"admin\", \"\")"
+                      + "\n let $create-collection := xmldb:create-collection(\"/db\", \"output\")"
+                      + "\n let $filename := \"/"+ ArxmlName +"_" + EcuName + ".arxml\""
+                      + "\n let $output-create := xmldb:store(\"/db/AUTOSAR/" + PartName + "\", $filename, $test)"
+                      + "\n let $ALL :=doc(\"/db/test/"+ArxmlName+".arxml\")/AUTOSAR/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/ELEMENTS"
+                      + "\n let $ALL_copy :=doc(\"/db/AUTOSAR/" + PartName + "/" +ArxmlName+"_" + EcuName
+                      + ".arxml\")/AUTOSAR/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE"
+                      + "\n let $SW :=$ALL/COMPOSITION-SW-COMPONENT-TYPE"
+                      + "\n let $PORT_SR:= $ALL/SENDER-RECEIVER-INTERFACE"
+                      + "\n let $PORT_CS := $ALL/CLIENT-SERVER-INTERFACE" + "\n let $PORT :=($PORT_SR,$PORT_CS)"
+                      + "\n let $ARD := $ALL/APPLICATION-RECORD-DATA-TYPE"
+                      + "\n let $AAD := $ALL/APPLICATION-ARRAY-DATA-TYPE"
+                      + "\n let $APD := $ALL/APPLICATION-PRIMITIVE-DATA-TYPE" + "\n let $DATATYPE := ($APD,$ARD,$AAD)"
+                      + "\n let $ECU := for $ECU in $SW[SHORT-NAME =\"" + EcuName + "\"] return $ECU"
+                      + "\n let $SUBSW :=for $SUBSW in $SW[SHORT-NAME = data($ECU/COMPONENTS/SW-COMPONENT-PROTOTYPE/SHORT-NAME)] return $SUBSW "
+                      + "\n let $PARTSW :=($ECU,$SUBSW)"
+                      + "\n let $PDATA := data($PARTSW/PORTS/P-PORT-PROTOTYPE/PROVIDED-INTERFACE-TREF)"
+                      + "\n let $RDATA := data($PARTSW/PORTS/R-PORT-PROTOTYPE/REQUIRED-INTERFACE-TREF)"
+                      + "\n let $ECU-PORT := for $ECU-PORT in $PORT[SHORT-NAME = $PDATA or SHORT-NAME = $RDATA] return $ECU-PORT"
+                      + "\n let $PORTDATA := data($ECU-PORT/DATA-ELEMENTS/VARIABLE-DATA-PROTOTYPE/TYPE-TREF)"
+                      + "\n let $PORT-DATATYPE := for $PORT-DATATYPE in $DATATYPE[SHORT-NAME = $PORTDATA] return $PORT-DATATYPE"
+                      + "\n let $ECU_insert := functx:change-element-ns-deep($ECU, \"\", \"\")"
+                      + "\n let $PORT_insert := functx:change-element-ns-deep($ECU-PORT, \"\", \"\")"
+                      + "\n let $DATA_insert := functx:change-element-ns-deep($PORT-DATATYPE, \"\", \"\")"
+                      + "\n let $DATATYPE_update := for $x in $DATA_insert"
+                      + "\n return update insert functx:change-element-ns-deep($DATA_insert, \"\", \"\") into $ALL_copy[SHORT-NAME = \"ApplicationDataTypes_Example\"]/ELEMENTS"
+                      + "\n let $PORT_update := for $x in $PORT_insert"
+                      + "\n return update insert functx:change-element-ns-deep($PORT_insert, \"\", \"\") into $ALL_copy[SHORT-NAME = \"PortInterfaces_Example\"]/ELEMENTS"
+                      + "\n let $ECU_update := for $x in $ECU_insert"
+                      + "\n return update insert functx:change-element-ns-deep($ECU_insert, \"\", \"\") into $ALL_copy[SHORT-NAME = \"SwComponentTypes_Example\"]/ELEMENTS"
+                      + "\n return doc(\"/db/AUTOSAR/" + PartName + "/"+ArxmlName+"_" + EcuName + ".arxml\")";
+
 			/////////////////////
 			/*
 			 * String query =

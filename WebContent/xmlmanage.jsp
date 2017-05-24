@@ -169,6 +169,7 @@
             <div class="skills inline">
 			<form method="post" action="main_excelextract">
                   <button name="Web2DB_ECUNAME" value="" type="submit" style="background-color:DeepSkyBlue; color:#ffffff">excel Extract</button>                  
+                  <a href="http://13.124.76.77:8080/exist/apps/eXide/index.html" style="background-color:DeepSkyBlue">eXist button</a>
                </form>
                <div style="border: 1px solid gold;overflow:scroll; width:800px; height:1500px; padding:10px; background-color:black;">
 				${ queryValue }
